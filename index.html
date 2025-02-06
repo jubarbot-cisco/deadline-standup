@@ -1,221 +1,300 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <title>Daily Standup Randomizer</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .container {
-            display: flex;
-            gap: 20px;
-        }
-        .input-section, .output-section {
-            flex: 1;
-        }
-        .timer-section {
-            text-align: center;
-            margin: 20px 0;
-            position: relative;
-        }
-        #timer {
-            font-size: 48px;
-            margin: 10px 0;
-            transition: color 0.5s ease;
-        }
-        #timerInfo {
-            font-size: 18px;
-            color: #666;
-        }
-        #deadlineEmoji {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 150px;
-            display: none;
-            animation: wave 1s infinite;
-            z-index: 1000;
-        }
-        @keyframes wave {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            25% { transform: translate(-50%, -50%) rotate(20deg); }
-            75% { transform: translate(-50%, -50%) rotate(-20deg); }
-            100% { transform: translate(-50%, -50%) rotate(0deg); }
-        }
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.9);
-            display: none;
-            z-index: 999;
-        }
-        #participantsList {
-            margin: 20px 0;
-            font-size: 18px;
-            line-height: 1.6;
-        }
-        textarea {
-            width: 100%;
-            height: 200px;
-            margin: 10px 0;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-right: 10px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .participant {
-            padding: 10px;
-            margin: 5px 0;
-            background-color: #f0f0f0;
-            border-radius: 4px;
-        }
-        #shareUrl {
-            width: 100%;
-            padding: 5px;
-            margin-top: 10px;
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <div id="deadlineEmoji">👋</div>
-    <div class="overlay"></div>
+    <head>
+        <title>Daily Standup Randomizer</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 20px;
+            }
+            .container {
+                display: flex;
+                gap: 20px;
+            }
+            .input-section,
+            .output-section {
+                flex: 1;
+            }
+            .timer-section {
+                text-align: center;
+                margin: 20px 0;
+                position: relative;
+            }
+            #timer {
+                font-size: 48px;
+                margin: 10px 0;
+                transition: color 0.5s ease;
+            }
+            #timerInfo {
+                font-size: 18px;
+                color: #666;
+            }
+            #deadlineEmoji {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 150px;
+                display: none;
+                animation: wave 1s infinite;
+                z-index: 1000;
+            }
+            @keyframes wave {
+                0% {
+                    transform: translate(-50%, -50%) rotate(0deg);
+                }
+                25% {
+                    transform: translate(-50%, -50%) rotate(20deg);
+                }
+                75% {
+                    transform: translate(-50%, -50%) rotate(-20deg);
+                }
+                100% {
+                    transform: translate(-50%, -50%) rotate(0deg);
+                }
+            }
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(255, 255, 255, 0.9);
+                display: none;
+                z-index: 999;
+            }
+            #participantsList {
+                margin: 20px 0;
+                font-size: 14px;
+                line-height: 1;
+            }
+            textarea {
+                width: 100%;
+                height: 200px;
+                margin: 10px 0;
+            }
+            button {
+                background-color: #4caf50;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+                margin-right: 10px;
+            }
+            button:hover {
+                background-color: #45a049;
+            }
+            .participant {
+                padding: 5px;
+                margin: 2px 0;
+                background-color: #f0f0f0;
+                border-radius: 4px;
+            }
+            #shareUrl {
+                width: 100%;
+                padding: 5px;
+                margin-top: 10px;
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="deadlineEmoji">👋</div>
+        <div class="overlay"></div>
 
-    <h1>Daily Standup Randomizer</h1>
-    
-    <div class="timer-section">
-        <div id="timerInfo">Time remaining until 9:45 AM</div>
-        <div id="timer">Loading...</div>
-    </div>
-    
-    <div class="container">
-        <div class="input-section">
-            <h2>Enter Participants</h2>
-            <p>Enter one name per line:</p>
-            <textarea id="namesInput" placeholder="John Doe&#10;Jane Smith&#10;Mike Johnson"></textarea>
-            <button onclick="randomizeOrder()">Randomize Order</button>
-            <button onclick="generateShareableUrl()">Generate Shareable URL</button>
-            <input type="text" id="shareUrl" readonly>
-        </div>
-        
-        <div class="output-section">
-            <h2>Speaking Order</h2>
-            <div id="participantsList"></div>
-        </div>
-    </div>
+        <h1>Daily Standup Randomizer</h1>
 
-    <script>
-        let emojiShown = false;
-        
-        function showEmoji() {
-            if (!emojiShown) {
-                document.getElementById('deadlineEmoji').style.display = 'block';
-                document.querySelector('.overlay').style.display = 'block';
-                emojiShown = true;
-                setTimeout(() => {
-                    document.getElementById('deadlineEmoji').style.display = 'none';
-                    document.querySelector('.overlay').style.display = 'none';
+        <div class="timer-section">
+            <div id="timerInfo">Time remaining until 9:45 AM</div>
+            <div id="timer">Loading...</div>
+        </div>
+
+        <div class="container">
+            <div class="input-section">
+                <h2>Enter Participants</h2>
+                <p>Enter one name per line:</p>
+                <textarea
+                    id="namesInput"
+                    placeholder="John Doe&#10;Jane Smith&#10;Mike Johnson"
+                ></textarea>
+                <button onclick="randomizeOrder()">Randomize Order</button>
+                <button onclick="generateShareableUrl()">
+                    Generate Shareable URL
+                </button>
+                <input type="text" id="shareUrl" readonly />
+            </div>
+
+            <div class="output-section">
+                <h2>Speaking Order</h2>
+                <div
+                    id="participantsList"
+                    style="max-height: 400px; overflow-y: auto"
+                ></div>
+            </div>
+        </div>
+
+        <script>
+            let emojiShown = false;
+
+            function showEmoji() {
+                if (!emojiShown) {
+                    document.getElementById("deadlineEmoji").style.display =
+                        "block";
+                    document.querySelector(".overlay").style.display = "block";
+                    emojiShown = true;
+                    setTimeout(() => {
+                        document.getElementById("deadlineEmoji").style.display =
+                            "none";
+                        document.querySelector(".overlay").style.display =
+                            "none";
+                        emojiShown = false;
+                    }, 5000);
+                }
+            }
+
+            function updateTimer() {
+                const targetTime = getTargetTime();
+                const now = new Date();
+                const target = new Date();
+                target.setHours(targetTime.hours, targetTime.minutes, 0, 0);
+
+                if (now > target) {
+                    target.setDate(target.getDate() + 1);
                     emojiShown = false;
-                }, 5000);
+                }
+
+                const diff = target - now;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor(
+                    (diff % (1000 * 60 * 60)) / (1000 * 60),
+                );
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                const timerElement = document.getElementById("timer");
+                const timerInfo = document.getElementById("timerInfo");
+
+                // const timeString = `${targetTime.hours.toString().padStart(2, '0')}:${targetTime.minutes.toString().padStart(2, '0')}`;
+                const timeString = `${target.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} (${target.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} UTC)`;
+                timerInfo.textContent = `Time remaining until ${timeString}`;
+                timerElement.textContent = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+                // Color transition logic
+                const totalMinutes = hours * 60 + minutes;
+                if (totalMinutes <= 5) {
+                    const percentage = totalMinutes / 5;
+                    const red = Math.floor(255 * (1 - percentage));
+                    const blue = Math.floor(255 * percentage);
+                    timerElement.style.color = `rgb(${red}, 0, ${blue})`;
+                } else if (totalMinutes <= 15) {
+                    const percentage = (totalMinutes - 5) / 10;
+                    timerElement.style.color = `rgb(0, 0, ${Math.floor(255 * percentage + 100)})`;
+                } else {
+                    timerElement.style.color = "#0066ff";
+                }
+
+                // Show emoji at target time
+                if (hours === 0 && minutes === 0 && seconds === 0) {
+                    showEmoji();
+                }
             }
-        }
 
-        function updateTimer() {
-            const now = new Date();
-            const target = new Date();
-            target.setHours(9, 45, 0, 0);
-            
-            if (now > target) {
-                target.setDate(target.getDate() + 1);
-                emojiShown = false;
-            }
-            
-            const diff = target - now;
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            const timerElement = document.getElementById('timer');
-            timerElement.textContent = 
-                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            
-            // Color transition logic
-            const totalMinutes = hours * 60 + minutes;
-            if (totalMinutes <= 5) {
-                const percentage = totalMinutes / 5;
-                const red = Math.floor(255 * (1 - percentage));
-                const blue = Math.floor(255 * percentage);
-                timerElement.style.color = `rgb(${red}, 0, ${blue})`;
-            } else if (totalMinutes <= 15) {
-                const percentage = (totalMinutes - 5) / 10;
-                timerElement.style.color = `rgb(0, 0, ${Math.floor(255 * percentage + 100)})`;
-            } else {
-                timerElement.style.color = '#0066ff';
+            function randomizeOrder() {
+                const namesText = document.getElementById("namesInput").value;
+                const names = namesText
+                    .split("\n")
+                    .filter((name) => name.trim());
+
+                for (let i = names.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [names[i], names[j]] = [names[j], names[i]];
+                }
+
+                const participantsList =
+                    document.getElementById("participantsList");
+                participantsList.innerHTML = names
+                    .map(
+                        (
+                            name,
+                            index,
+                        ) => `<div class="participant" onclick="cycleEmoji(${index})" style="cursor: pointer">
+                                      <span id="emoji${index}" data-state="none" style="margin-right: 5px;">⬜️</span>
+                                      <span>${index + 1}. ${name.trim()}</span>
+                                  </div>`,
+                    )
+                    .join("");
             }
 
-            // Show emoji at exactly 9:45 AM
-            if (hours === 0 && minutes === 0 && seconds === 0) {
-                showEmoji();
+            function cycleEmoji(index) {
+                const emojiSpan = document.getElementById(`emoji${index}`);
+                const currentState = emojiSpan.getAttribute("data-state");
+
+                const emojiStates = {
+                    none: { emoji: "⬜️", next: "check" },
+                    check: { emoji: "✅", next: "missing" },
+                    missing: { emoji: "❌", next: "none" },
+                };
+
+                const nextState = emojiStates[currentState].next;
+                emojiSpan.textContent = emojiStates[nextState].emoji;
+                emojiSpan.setAttribute("data-state", nextState);
             }
-        }
 
-        function randomizeOrder() {
-            const namesText = document.getElementById('namesInput').value;
-            const names = namesText.split('\n').filter(name => name.trim());
-            
-            for (let i = names.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [names[i], names[j]] = [names[j], names[i]];
+            function generateShareableUrl() {
+                const names = document.getElementById("namesInput").value;
+                const encodedNames = encodeURIComponent(names);
+                const url = `${window.location.origin}${window.location.pathname}?names=${encodedNames}`;
+                const shareUrlInput = document.getElementById("shareUrl");
+                shareUrlInput.value = url;
+                shareUrlInput.style.display = "block";
+                shareUrlInput.select();
+                document.execCommand("copy");
             }
-            
-            const participantsList = document.getElementById('participantsList');
-            participantsList.innerHTML = names
-                .map((name, index) => `<div class="participant">${index + 1}. ${name.trim()}</div>`)
-                .join('');
-        }
 
-        function generateShareableUrl() {
-            const names = document.getElementById('namesInput').value;
-            const encodedNames = encodeURIComponent(names);
-            const url = `${window.location.origin}${window.location.pathname}?names=${encodedNames}`;
-            const shareUrlInput = document.getElementById('shareUrl');
-            shareUrlInput.value = url;
-            shareUrlInput.style.display = 'block';
-            shareUrlInput.select();
-            document.execCommand('copy');
-        }
-
-        function loadNamesFromUrl() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const names = urlParams.get('names');
-            if (names) {
-                document.getElementById('namesInput').value = decodeURIComponent(names);
-                randomizeOrder();
+            function loadNamesFromUrl() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const names = urlParams.get("names");
+                if (names) {
+                    document.getElementById("namesInput").value =
+                        decodeURIComponent(names);
+                    randomizeOrder();
+                }
             }
-        }
 
-        // Update timer immediately and every second
-        updateTimer();
-        setInterval(updateTimer, 1000);
+            function getTargetTime() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const targetParam = urlParams.get("target");
 
-        // Load names when page loads
-        window.onload = loadNamesFromUrl;
-    </script>
-</body>
+                if (targetParam) {
+                    // Try to parse the HH:MM format
+                    const [hours, minutes] = targetParam
+                        .split(":")
+                        .map((num) => parseInt(num));
+                    if (
+                        !isNaN(hours) &&
+                        !isNaN(minutes) &&
+                        hours >= 0 &&
+                        hours < 24 &&
+                        minutes >= 0 &&
+                        minutes < 60
+                    ) {
+                        return { hours, minutes };
+                    }
+                }
+
+                // Default to 9:45 AM if no valid parameter is provided
+                return { hours: 9, minutes: 45 };
+            }
+
+            // Update timer immediately and every second
+            updateTimer();
+            setInterval(updateTimer, 1000);
+
+            // Load names when page loads
+            window.onload = loadNamesFromUrl;
+        </script>
+    </body>
 </html>
